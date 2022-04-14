@@ -2,7 +2,15 @@
 
 body {
     background-color: #f5f5f5;
-    font-family: Roboto;
+    font-family: Roboto, sans-serif;
+}
+
+p {
+    line-height: 20px;
+}
+
+em {
+    font-weight: 700;
 }
 
 .chat-uol {
@@ -35,8 +43,10 @@ body {
 }
 
 .chat {
-    margin: 100px 0;
+    margin-top: 96px;
+    margin-bottom: 100px;
     font-size: 14px;
+    overflow-y: scroll;
 }
 
 .bottom {
@@ -58,7 +68,9 @@ body {
 
 .chat-msgs {
     border-radius: 2px;
-    padding: 8px;
+    padding: 12px 8px;
+    margin-top: 4px;
+    word-wrap: break-word;
 }
 
 .status {
@@ -69,6 +81,6 @@ body {
     background-color: #FFDEDE;
 }
 
-.normal {
+.message {
     background-color: #fff;
 }
