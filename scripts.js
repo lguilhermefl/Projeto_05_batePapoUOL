@@ -1,13 +1,14 @@
 let chatHistory;
+const timeToReloadChat = 3000;
 
-getChatHistory();
+setInterval(getChatHistory, timeToReloadChat);
 
 function getChatHistory() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
-    promise.then(styleMessages);
+    promise.then(feedChat);
 }
 
-function styleMessages(messages) {
+function feedChat(messages) {
     chatHistory = messages.data;
     const chat = document.querySelector(".chat");
 
@@ -33,4 +34,10 @@ function styleMessages(messages) {
                 break;
         }
     }
+    scrollToNewMessage();
+}
+
+function scrollToNewMessage() {
+    const newMessage = document.querySelector(".chat").lastChild;
+    newMessage.scrollIntoView();
 }
