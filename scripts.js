@@ -1,5 +1,6 @@
 let chatHistory;
 let userName;
+let signUserIntervalId;
 const timeToReloadChat = 3000;
 const intervalActive = 4000;
 
@@ -32,7 +33,9 @@ function feedChat(messages) {
                 break;
 
             case "private_message":
-                chat.innerHTML += `<div class="chat-msgs private"><p>${time} <em>${from}</em> reservadamente para <em>${to}</em>: ${text}</p></div>`;
+                if(ifPrivate(to)) {
+                    chat.innerHTML += `<div class="chat-msgs private"><p>${time} <em>${from}</em> reservadamente para <em>${to}</em>: ${text}</p></div>`;
+                }
                 break;
         }
     }
@@ -73,14 +76,38 @@ function checkUserName(promise) {
 
 function loginSucces() {
     setInterval(getChatHistory, timeToReloadChat);
-    setInterval(signUser, intervalActive);
+    signUserIntervalId = setInterval(signUser, intervalActive);
 }
 
 function signUser() {
-    const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/status", {"name":userName});
-    promise.catch(signError);
+    const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/status", {"name": userName});
+    promise.catch(stopSignUserInterval);
 }
 
-function signError() {
+function stopSignUserInterval() {
+    clearInterval(signUserIntervalId);
+}
+
+function reloadPage() {
     window.location.reload();
+}
+
+function sendMessage() {
+    const inputEl = document.querySelector("input");
+    const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", {
+        from: userName,
+        to: "Todos",
+        text: inputEl.value,
+        type: "message"
+    });
+    inputEl.value = "";
+    promise.then(getChatHistory);
+    promise.catch(reloadPage);
+}
+
+function ifPrivate(recipient) {
+    if(recipient === userName || recipient === "Todos") {
+        return true;
+    }
+    return false;
 }
