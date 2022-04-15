@@ -1,7 +1,9 @@
 let chatHistory;
+let userName;
 const timeToReloadChat = 3000;
+const intervalActive = 4000;
 
-setInterval(getChatHistory, timeToReloadChat);
+initChat();
 
 function getChatHistory() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
@@ -40,4 +42,45 @@ function feedChat(messages) {
 function scrollToNewMessage() {
     const newMessage = document.querySelector(".chat").lastChild;
     newMessage.scrollIntoView();
+}
+
+function askUserName() {
+    userName = prompt("Qual o seu nome?");
+}
+
+function initChat() {
+    askUserName();
+    const requisition = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants", {"name":userName});
+    requisition.then(loginSucces);
+    requisition.catch(checkUserName);
+
+}
+
+function errorCode(error) {
+    const statusCode = error.response.status;
+    return statusCode;
+}
+
+function loginCondition(promise) {
+    return errorCode(promise) === 400;
+}
+
+function checkUserName(promise) {
+    if(loginCondition(promise)) {
+        initChat();
+    }
+}
+
+function loginSucces() {
+    setInterval(getChatHistory, timeToReloadChat);
+    setInterval(signUser, intervalActive);
+}
+
+function signUser() {
+    const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/status", {"name":userName});
+    promise.catch(signError);
+}
+
+function signError() {
+    window.location.reload();
 }
