@@ -1,20 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-body {
-    background-color: #f5f5f5;
-    font-family: Roboto, sans-serif;
-}
-
-p {
-    line-height: 20px;
-}
-
-em {
-    font-weight: 700;
-}
-
 /*Loader*/
-
 .loader {
     color: #000;
     font-size: 15px;
@@ -85,8 +71,39 @@ em {
       box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
     }
   }
-
 /*Loader*/
+
+/*Animate chat appearing*/
+.animate {
+  -webkit-animation-name: animate;
+  -webkit-animation-duration: 1s;
+  animation-name: animate;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animate {
+  from { opacity:0 } 
+  to { opacity:1 }
+}
+
+@keyframes animate { 
+  from{ opacity:0 } 
+  to{ opacity:1 }
+}
+/*Animate chat appearing*/
+
+body {
+  background-color: #f5f5f5;
+  font-family: Roboto, sans-serif;
+}
+
+p {
+  line-height: 20px;
+}
+
+em {
+  font-weight: 700;
+}
 
 .login {
     position: fixed;
@@ -127,6 +144,11 @@ em {
     border-radius: 9px;
     background-color: #E7E7E7;
     border: none;
+}
+
+.login button:hover {
+  background-color: #32B72F;
+  color: #fff;
 }
 
 .login p {
@@ -180,13 +202,13 @@ em {
 .bottom input {
     border: none;
     font-size: 18px;
-    font-style: italic;
     outline: none;
     width: 90%;
 }
 
 .bottom input::placeholder {
     color: #000;
+    font-style: italic;
 }
 
 .bottom p {
