@@ -1,10 +1,16 @@
 let chatHistory;
 let userName;
 let signUserIntervalId;
-const timeToReloadChat = 3000;
-const intervalActive = 4000;
+
+let selectedContact = "Todos";
+let visibility = "Público";
+
+const timeToReloadChat = 3 * 1000;
+const intervalActive = 4 * 1000;
+const timeToRefreshParticipantsList = 10 * 1000;
 
 initChat();
+setInterval(getParticipants, timeToRefreshParticipantsList);
 
 function getChatHistory() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
@@ -14,6 +20,7 @@ function getChatHistory() {
 function feedChat(messages) {
     chatHistory = messages.data;
     const chat = document.querySelector(".chat");
+    chat.innerHTML = "";
 
     for(let i = 0; i < chatHistory.length; i++) {
 
@@ -33,7 +40,7 @@ function feedChat(messages) {
                 break;
 
             case "private_message":
-                if(ifPrivate(to)) {
+                if(ifPrivate(to, from)) {
                     chat.innerHTML += `<div class="chat-msgs private"><p>${time} <em>${from}</em> reservadamente para <em>${to}</em>: ${text}</p></div>`;
                 }
                 break;
@@ -56,7 +63,7 @@ function initChat() {
     const requisition = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants", {"name":userName});
     requisition.then(loginSucces);
     requisition.catch(checkUserName);
-
+    getParticipants();
 }
 
 function errorCode(error) {
@@ -94,20 +101,87 @@ function reloadPage() {
 
 function sendMessage() {
     const inputEl = document.querySelector("input");
-    const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", {
-        from: userName,
-        to: "Todos",
-        text: inputEl.value,
-        type: "message"
-    });
-    inputEl.value = "";
-    promise.then(getChatHistory);
-    promise.catch(reloadPage);
+    let messageType;
+
+    if(visibility === "Reservadamente") {
+        messageType = "private_message";
+    } else {
+        messageType = "message";
+    }
+
+    if(inputEl.value !== "") {
+        const promise = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", {
+            from: userName,
+            to: selectedContact,
+            text: inputEl.value,
+            type: messageType
+        });
+        inputEl.value = "";
+        promise.then(getChatHistory);
+        promise.catch(reloadPage);
+    }
 }
 
-function ifPrivate(recipient) {
-    if(recipient === userName || recipient === "Todos") {
+function ifPrivate(recipient, sender) {
+    if(recipient === userName || recipient === "Todos" || sender === userName) {
         return true;
     }
     return false;
+}
+
+function getParticipants() {
+    const promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/participants");
+    promise.then(addParticipantsToMenu);
+}
+
+function addParticipantsToMenu(participants) {
+    const recipients = participants.data;
+    const listOfParticipants = document.querySelector(".users-online");
+    listOfParticipants.innerHTML = "";
+    listOfParticipants.innerHTML = `<li onclick="selectRecipient(this)"><div><ion-icon name="people-sharp"></ion-icon><p>Todos</p></div><div><ion-icon class="check" name="checkmark-outline"></div></li>`;
+    for(let i = 0; i < recipients.length; i++) {
+        if(recipients[i].name !== userName) {
+            listOfParticipants.innerHTML += `<li onclick="selectRecipient(this)"><div><ion-icon name="person-circle"></ion-icon><p>${recipients[i].name}</p></div><div><ion-icon class="check" name="checkmark-outline"></div></li>`;
+        }
+    }
+}
+
+function openMenu() {
+    const menu = document.querySelector(".lateral-menu");
+    menu.classList.remove("hidden");
+}
+
+function closeMenu() {
+    const menu = document.querySelector(".lateral-menu");
+    menu.classList.add("hidden");
+}
+
+function selectRecipient(el) {
+    const check = el.querySelector(".check");
+    const recipientsList = document.querySelector(".recipient");
+    const selected = recipientsList.querySelector(".selected");
+    const messageInfo = document.querySelector(".bottom p");
+
+    if(selected !== null) {
+        selected.classList.remove("selected");
+        selectedContact = "Todos";
+    }
+    check.classList.add("selected");
+    selectedContact = el.querySelector("p").innerText;
+    messageInfo.innerText = `Enviando para ${selectedContact} (${visibility})`
+}
+
+function selectVisibility(el) {
+    const check = el.querySelector(".check");
+    const visibilityList = document.querySelector(".visibility");
+    const selected = visibilityList.querySelector(".selected");
+    const messageInfo = document.querySelector(".bottom p");
+
+    if(selected !== null) {
+        selected.classList.remove("selected");
+        visibility = "Público";
+    }
+    check.classList.add("selected");
+    visibility = el.querySelector("p").innerText;
+    messageInfo.innerText = `Enviando para ${selectedContact} (${visibility})`
 }
