@@ -157,6 +157,7 @@ function selectRecipient(el) {
         selectedContact = "Todos";
     }
     check.classList.add("selected");
+    selectedContact = el.querySelector("p").innerText;
     addMessageInfo();
 }
 
@@ -170,6 +171,7 @@ function selectVisibility(el) {
         visibility = "Público";
     }
     check.classList.add("selected");
+    visibility = el.querySelector("p").innerText;
     addMessageInfo();
 }
 
