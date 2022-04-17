@@ -8,9 +8,9 @@ let visibility = "Público";
 const timeToReloadChat = 3 * 1000;
 const intervalActive = 4 * 1000;
 const timeToRefreshParticipantsList = 10 * 1000;
+const timeToShowChat = 3 * 1000;
 
-initChat();
-setInterval(getParticipants, timeToRefreshParticipantsList);
+//initChat();
 
 function getChatHistory() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
@@ -54,16 +54,23 @@ function scrollToNewMessage() {
     newMessage.scrollIntoView();
 }
 
-function askUserName() {
-    userName = prompt("Qual o seu nome?");
+//function askUserName() {
+    //userName = prompt("Qual o seu nome?");
+//}
+
+function getName() {
+    const inputEl = document.querySelector("input");
+    userName = inputEl.value;
+    initChat();
 }
 
 function initChat() {
-    askUserName();
+    //askUserName();
     const requisition = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants", {"name":userName});
     requisition.then(loginSucces);
     requisition.catch(checkUserName);
-    getParticipants();
+    //getParticipants();
+    setInterval(getParticipants, timeToRefreshParticipantsList);
 }
 
 function errorCode(error) {
@@ -77,11 +84,13 @@ function loginCondition(promise) {
 
 function checkUserName(promise) {
     if(loginCondition(promise)) {
-        initChat();
+        alertUserName();
     }
 }
 
 function loginSucces() {
+    showLoader();
+    setTimeout(showChat, timeToShowChat);
     setInterval(getChatHistory, timeToReloadChat);
     signUserIntervalId = setInterval(signUser, intervalActive);
 }
@@ -100,7 +109,7 @@ function reloadPage() {
 }
 
 function sendMessage() {
-    const inputEl = document.querySelector("input");
+    const inputEl = document.querySelector(".chat-uol input");
     let messageType;
 
     if(visibility === "Reservadamente") {
@@ -184,4 +193,28 @@ function selectVisibility(el) {
     check.classList.add("selected");
     visibility = el.querySelector("p").innerText;
     messageInfo.innerText = `Enviando para ${selectedContact} (${visibility})`
+}
+
+function showLoader() {
+    const loader = document.querySelector(".loader");
+    const loading = document.querySelector(".login p");
+    const inputEl = document.querySelector("input");
+    const buttonEl = document.querySelector("button");
+
+    loader.classList.remove("hidden");
+    loading.classList.remove("hidden");
+    inputEl.classList.add("hidden");
+    buttonEl.classList.add("hidden");
+}
+
+function showChat() {
+    const login = document.querySelector(".login");
+    const chat = document.querySelector(".chat-uol");
+    
+    login.classList.add("hidden");
+    chat.classList.remove("hidden");
+}
+
+function alertUserName() {
+    alert("Já existe um usuário com este nome, digite outro por favor!");
 }
