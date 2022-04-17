@@ -27,7 +27,7 @@
             <div class="chat"></div>
             <div class="bottom bar">
                 <div>
-                    <input type="text" placeholder="Escreva aqui..." />
+                    <input type="text" placeholder="Escreva aqui..." onkeydown="sendMsgWithEnter(event)" />
                     <p></p>
                 </div>
                 <ion-icon name="paper-plane-outline" onclick="sendMessage()"></ion-icon>

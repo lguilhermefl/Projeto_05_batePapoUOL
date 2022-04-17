@@ -218,3 +218,10 @@ function showChat() {
 function alertUserName() {
     alert("Já existe um usuário com este nome, digite outro por favor!");
 }
+
+function sendMsgWithEnter(event) {
+    let keydown = event.key;
+    if(keydown === "Enter") {
+        sendMessage();
+    }
+}
