@@ -43,7 +43,7 @@ function addMessagesToChat(chatHistory) {
 }
 
 function scrollToNewMessage() {
-    const newMessage = document.querySelector(".chat").lastChild;
+    const newMessage = document.querySelector(".chat div:last-child");
     newMessage.scrollIntoView();
 }
 
